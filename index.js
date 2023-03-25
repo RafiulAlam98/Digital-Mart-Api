@@ -87,6 +87,7 @@ async function run() {
     app.get("/shipping/:email", async (req, res) => {
       const email = req.params.email;
       const query = {};
+      const result = {};
     });
   } finally {
   }
