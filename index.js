@@ -5,6 +5,8 @@ require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
 const jwt = require("jsonwebtoken");
+const { default: Stripe } = require("stripe");
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 //middleware
 app.use(cors());
@@ -37,7 +39,7 @@ const verifyToken = (req, res, next) => {
 async function run() {
   try {
     await client.connect();
-    console.log("database connected");
+
     const database = client.db("e-mart");
     const productCollection = database.collection("products");
     const shipmentInfo = database.collection("shipping");
@@ -88,6 +90,25 @@ async function run() {
       const email = req.params.email;
       const query = {};
       const result = {};
+    });
+
+    app.post("/create-payment-intent", verifyToken, async (req, res) => {
+      const booking = req.body;
+      console.log(booking);
+      const price = booking.totalAmount;
+      const amount = parseInt(price) * 100;
+      console.log(amount);
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        currency: "usd",
+        amount: amount,
+        payment_method_types: ["card"],
+      });
+      console.log(paymentIntent.client_secret);
+
+      res.send({
+        clientSecret: paymentIntent.client_secret,
+      });
     });
   } finally {
   }
