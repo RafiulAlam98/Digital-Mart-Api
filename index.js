@@ -72,6 +72,12 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/user", async (req, res) => {
+      const query = {};
+      const result = await userCollections.find(query).toArray();
+      res.send(result);
+    });
+
     app.get("/jwt", async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
@@ -90,6 +96,41 @@ async function run() {
       const email = req.params.email;
       const query = {};
       const result = {};
+    });
+
+    app.get("/users/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await userCollections.findOne(query);
+      res.send({ isAdmin: user?.role === "admin" });
+    });
+
+    app.put("/user/admin/:id", verifyToken, async (req, res) => {
+      const id = req.params.id;
+
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = userCollections.updateOne(query, updatedDoc, options);
+      res.send(result);
+    });
+
+    app.put("/user/vendor/:id", verifyToken, async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedDoc = {
+        $set: {
+          title: "vendor",
+        },
+      };
+      const result = userCollections.updateOne(query, updatedDoc, options);
+      res.send(result);
     });
 
     app.post("/create-payment-intent", verifyToken, async (req, res) => {
