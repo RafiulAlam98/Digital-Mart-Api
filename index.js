@@ -133,6 +133,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/user/vendor/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await userCollections.findOne(query);
+      res.send({ isVendor: user?.title === "vendor" });
+    });
+
     app.post("/create-payment-intent", verifyToken, async (req, res) => {
       const booking = req.body;
       console.log(booking);
