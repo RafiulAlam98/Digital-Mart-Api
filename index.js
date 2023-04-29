@@ -42,7 +42,7 @@ async function run() {
 
     const database = client.db("e-mart");
     const productCollection = database.collection("products");
-    const shipmentInfo = database.collection("shipping");
+    const shippingCollection = database.collection("shipping");
     const userCollections = database.collection("users");
 
     // get all the products
@@ -59,11 +59,24 @@ async function run() {
       res.json(result);
     });
 
+    app.post("/products", async (req, res) => {
+      const product = req.body;
+
+      const result = await productCollection.insertOne(product);
+      res.json(result);
+    });
+
     // user shipping products
     app.post("/shipping", async (req, res) => {
-      const doc = req.body;
-      const result = await shipmentInfo.insertOne(doc);
+      const payment = req.body;
+      console.log(payment);
+      const result = await shippingCollection.insertOne(payment);
       res.json(result);
+    });
+
+    app.get("/shipping/:email", async (req, res) => {
+      const query = req.params.email;
+      console.log(query);
     });
 
     app.post("/user", async (req, res) => {
@@ -90,12 +103,6 @@ async function run() {
         return res.send({ accessToken: token });
       }
       res.status(403).send({ accessToken: "" });
-    });
-
-    app.get("/shipping/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = {};
-      const result = {};
     });
 
     app.delete("/user/:id", async (req, res) => {
@@ -150,7 +157,6 @@ async function run() {
 
     app.post("/create-payment-intent", verifyToken, async (req, res) => {
       const booking = req.body;
-      console.log(booking);
       const price = booking.totalAmount;
       const amount = parseInt(price) * 100;
       console.log(amount);
@@ -160,7 +166,6 @@ async function run() {
         amount: amount,
         payment_method_types: ["card"],
       });
-      console.log(paymentIntent.client_secret);
 
       res.send({
         clientSecret: paymentIntent.client_secret,
