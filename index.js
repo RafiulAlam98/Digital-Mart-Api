@@ -38,7 +38,7 @@ const verifyToken = (req, res, next) => {
 
 async function run() {
   try {
-    await client.connect();
+     client.connect();
 
     console.log("database connected");
     const database = client.db("e-mart");
