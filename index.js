@@ -40,6 +40,7 @@ async function run() {
   try {
     await client.connect();
 
+    console.log("database connected");
     const database = client.db("e-mart");
     const productCollection = database.collection("products");
     const shippingCollection = database.collection("shipping");
