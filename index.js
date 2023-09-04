@@ -70,6 +70,7 @@ async function run() {
       res.json(result);
     });
 
+    // add products
     app.post("/products", async (req, res) => {
       const product = req.body;
 
@@ -77,6 +78,7 @@ async function run() {
       res.json(result);
     });
 
+    // add reviews
     app.put("/products/:id", async (req, res) => {
       const { id } = req.params;
       const data = req.body;
@@ -84,8 +86,17 @@ async function run() {
         { _id: new ObjectId(id) },
         { $push: { reviews: data } }
       );
-      console.log(result);
-      return result;
+      res.json(result);
+    });
+
+    // delete products
+    app.delete("/products/:id", async (req, res) => {
+      const { id } = req.params;
+      console.log(id);
+      const result = await productCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      res.send(result);
     });
 
     // user shipping products
