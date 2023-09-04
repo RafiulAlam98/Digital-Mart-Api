@@ -38,7 +38,7 @@ const verifyToken = (req, res, next) => {
 
 async function run() {
   try {
-     client.connect();
+    client.connect();
 
     console.log("database connected");
     const database = client.db("e-mart");
@@ -57,6 +57,16 @@ async function run() {
       } else {
         result = await cursor.toArray();
       }
+      res.json(result);
+    });
+
+    //get single products
+    app.get("/products/:id", async (req, res) => {
+      const { id } = req.params;
+      console.log(id);
+      const result = await productCollection.findOne({ _id: new ObjectId(id) });
+      console.log(result);
+
       res.json(result);
     });
 
