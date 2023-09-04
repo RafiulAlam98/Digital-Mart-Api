@@ -77,6 +77,17 @@ async function run() {
       res.json(result);
     });
 
+    app.put("/products/:id", async (req, res) => {
+      const { id } = req.params;
+      const data = req.body;
+      const result = await productCollection.updateOne(
+        { _id: new ObjectId(id) },
+        { $push: { reviews: data } }
+      );
+      console.log(result);
+      return result;
+    });
+
     // user shipping products
     app.post("/shipping", async (req, res) => {
       const payment = req.body;
