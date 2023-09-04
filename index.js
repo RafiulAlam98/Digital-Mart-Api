@@ -81,7 +81,8 @@ async function run() {
     // add reviews
     app.put("/products/:id", async (req, res) => {
       const { id } = req.params;
-      const data = req.body;
+      const { ...data } = req.body;
+      console.log(req.body);
       const result = await productCollection.updateOne(
         { _id: new ObjectId(id) },
         { $push: { reviews: data } }
@@ -107,11 +108,19 @@ async function run() {
       res.json(result);
     });
 
-    app.get("/shipping/:email", async (req, res) => {
-      const query = req.params.email;
-      console.log(query);
+    app.get("/order", async (req, res) => {
+      const query = {};
+      const result = await shippingCollection.find(query).toArray();
+      res.send(result);
     });
 
+    app.get("/order/:email", async (req, res) => {
+      const { email } = req.params;
+      const result = await shippingCollection.find({ email: email }).toArray();
+      res.send(result);
+    });
+
+  
     app.post("/user", async (req, res) => {
       const user = req.body;
       const result = await userCollections.insertOne(user);
